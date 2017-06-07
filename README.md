@@ -9,13 +9,17 @@ You will get a different response depending on the hmdmc you send. OK (200) is e
 
 The script reads a file at startup, called `HMDMCs.txt` by default.
 
-The file should be formatting in the following way:
+The file should be formatted in the following way:
 
     [DEFAULT]
     17_000 = 200
     17_001 = 404
     default = 200
 
-Any string given as an HMDMC which is not explicitly listed will get the 'default' response.
+Any string given as an HMDMC that is not explicitly listed will get the 'default' response.
 
 In the examples I'm assuming we're giving HMDMCs in the format `YY_NNN` rather than `YY/NNN`, since forward slashes are awkward in URLs. (This is the practice adopted by the CGAP LIMS.)
+
+Usage:
+
+    ./fake_hmdmc.py 3501  # run on port 3501 with default HMDMC file
