@@ -13,7 +13,6 @@ from ConfigParser import ConfigParser
 class Handler(BaseHTTPRequestHandler):
     PATTERN = re.compile(r'^/?validate\?hmdmc=(.+)$', re.I)
     def do_GET(self):
-        path = self.path.upper()
         m = Handler.PATTERN.match(self.path)
         if m:
             hmdmc = m.group(1)
@@ -29,7 +28,7 @@ def read_file(filename):
     config = ConfigParser()
     config.read(filename)
     return config.defaults()
-        
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('port', type=int)
