@@ -4,7 +4,7 @@ PORT=3501
 
 set -e
 
-cd "`dirname $0`"
+cd "`dirname $BASH_SOURCE`"
 
 if [ -f ./run.pid ]
 then
