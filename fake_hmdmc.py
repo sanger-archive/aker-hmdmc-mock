@@ -23,6 +23,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             result = 404
         self.send_response(result)
+        self.end_headers()
 
 def read_file(filename):
     config = ConfigParser()
