@@ -42,10 +42,10 @@ def run_http_server(args, Handler):
         server.socket.close()
 
 def run_https_server(args, Handler):
-    server = HTTPServer(('0.0.0.0', args.sslport), Handler)
-    server.socket = ssl.wrap_socket(server.socket, certfile=args.certificate, keyfile=args.keyfile, server_side=True)
+    server = HTTPServer(('0.0.0.0', args.port), Handler)
+    server.socket = ssl.wrap_socket(server.socket, certfile=args.certfile, keyfile=args.keyfile, server_side=True)
     try:
-        print "Listening to HTTPS on port %s ..."%args.sslport
+        print "Listening to HTTPS on port %s ..."%args.port
         server.serve_forever()
     finally:
         print "Closing"
@@ -53,22 +53,20 @@ def run_https_server(args, Handler):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-p', '--port', type=int, help="If provided, it will start a http server in the port number specified")
+    parser.add_argument('port', type=int)
     parser.add_argument('-f', '--file', default='HMDMCs.txt',
         help="File to read HMDMCs from (default is HMDMCs.txt)")
-    parser.add_argument('-c', '--certificate', help="Path to the certificate file to use for HTTPS")
+    parser.add_argument('-c', '--certfile', help="Path to the certificate file to use for HTTPS")
     parser.add_argument('-k', '--keyfile', help="Path to the key file to use with the certificate")
-    parser.add_argument('-s', '--sslport', type=int, help="If provided, it will start a https server in the port number specified")
 
     args = parser.parse_args()
     hmdmcs = read_file(args.file)
     Handler.hmdmcs = hmdmcs
 
-    if (args.port):
+    if (not args.certfile):
         run_http_server(args, Handler)
-
-    if (args.sslport):
-        run_https_server(args, Handler)
+    else:
+        run_https_server(args, Handler)       
 
 if __name__=='__main__':
     main()

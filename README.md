@@ -23,7 +23,7 @@ In the examples I'm assuming we're giving HMDMCs in the format `YY_NNN` rather t
 Usage:
 
 To start a HTTP server:
-    ./fake_hmdmc.py -p 3501  # run on port 3501 with default HMDMC file
+    ./fake_hmdmc.py 3501  # run HTTP on port 3501 with default HMDMC file
 
 To start a HTTPS server:
-    ./fake_hmdmc.py -s 3501 -c /path/to/certfile -k /path/to/keyfile
+    ./fake_hmdmc.py -c /path/to/certfile -k /path/to/keyfile 3501 # run HTTPS on port 3501 with default HMDMC file
