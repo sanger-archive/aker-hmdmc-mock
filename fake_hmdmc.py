@@ -10,6 +10,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import re
 from ConfigParser import ConfigParser
 
+import ssl
+
 class Handler(BaseHTTPRequestHandler):
     PATTERN = re.compile(r'^/?validate\?hmdmc=(.+)$', re.I)
     def do_GET(self):
@@ -30,21 +32,41 @@ def read_file(filename):
     config.read(filename)
     return config.defaults()
 
+def run_http_server(args, Handler):
+    server = HTTPServer(('0.0.0.0', args.port), Handler)
+    try:
+        print "Listening to HTTP on port %s ..."%args.port
+        server.serve_forever()
+    finally:
+        print "Closing"
+        server.socket.close()
+
+def run_https_server(args, Handler):
+    server = HTTPServer(('0.0.0.0', args.port), Handler)
+    server.socket = ssl.wrap_socket(server.socket, certfile=args.certfile, keyfile=args.keyfile, server_side=True)
+    try:
+        print "Listening to HTTPS on port %s ..."%args.port
+        server.serve_forever()
+    finally:
+        print "Closing"
+        server.socket.close()
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('port', type=int)
     parser.add_argument('-f', '--file', default='HMDMCs.txt',
         help="File to read HMDMCs from (default is HMDMCs.txt)")
+    parser.add_argument('-c', '--certfile', help="Path to the certificate file to use for HTTPS")
+    parser.add_argument('-k', '--keyfile', help="Path to the key file to use with the certificate")
+
     args = parser.parse_args()
     hmdmcs = read_file(args.file)
     Handler.hmdmcs = hmdmcs
-    server = HTTPServer(('0.0.0.0', args.port), Handler)
-    try:
-        print "Listening on port %s ..."%args.port
-        server.serve_forever()
-    finally:
-        print "Closing"
-        server.socket.close()
+
+    if (not args.certfile):
+        run_http_server(args, Handler)
+    else:
+        run_https_server(args, Handler)       
 
 if __name__=='__main__':
     main()
