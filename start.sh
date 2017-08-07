@@ -12,7 +12,7 @@ then
 	exit 1
 fi
 
-nohup ./fake_hmdmc.py -c ../shared/nginx-selfsigned.pem -k ../shared/nginx-selfsigned.key $PORT > ./log.txt 2>&1 &
+nohup ./fake_hmdmc.py -c ../../shared/nginx-selfsigned.pem -k ../../shared/nginx-selfsigned.key $PORT > ./log.txt 2>&1 &
 
 echo $! > ./run.pid
 echo "OK"
