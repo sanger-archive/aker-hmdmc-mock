@@ -8,24 +8,39 @@ Perform GET validate?hmdmc=17_000 to see it work.
 import argparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import re
+import json
 from ConfigParser import ConfigParser
 
 import ssl
 
 class Handler(BaseHTTPRequestHandler):
-    PATTERN = re.compile(r'^/?validate\?hmdmc=(.+)$', re.I)
+    """Accepts validate?hmdmc=# or /validateHMDMC?hmdmc=#.
+    Responds with a 200 as long as the request is correctly formed.
+    Sends back JSON with the error code described in the config
+    file for that HMDMC code.
+    JSON specifies valid=true if the error code is zero, otherwise
+    valid=false."""
+    PATTERN = re.compile(r'^/?validate(?:hmdmc)?\?hmdmc=(.+)$', re.I)
     def do_GET(self):
         m = Handler.PATTERN.match(self.path)
-        if m:
-            hmdmc = m.group(1)
-            result = Handler.hmdmcs.get(hmdmc)
-            if result is None:
-                result = Handler.hmdmcs.get('default', 404)
-            result = int(result)
-        else:
-            result = 404
-        self.send_response(result)
+        if not m:
+            self.send_response(404)
+            self.end_headers()
+            return
+        hmdmc = m.group(1)
+        errorcode = Handler.hmdmcs.get(hmdmc)
+        if errorcode is None:
+            errorcode = Handler.hmdmcs.get('default', 0)
+        errorcode = int(errorcode)
+        data = {
+            'valid': (errorcode==0),
+            'errorcode': errorcode,
+            'productclasses': []
+        }
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
         self.end_headers()
+        json.dump(data, self.wfile)
 
 def read_file(filename):
     config = ConfigParser()
