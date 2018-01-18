@@ -12,7 +12,7 @@ then
 	exit 1
 fi
 
-nohup $PROJECT_FOLDER/current/fake_hmdmc.py -c $PROJECT_FOLDER/shared/nginx-selfsigned.pem -k $PROJECT_FOLDER/shared/nginx-selfsigned.key $PORT > $PROJECT_FOLDER/current/log.txt 2>&1 &
+nohup $PROJECT_FOLDER/current/fake_hmdmc.py -c $PROJECT_FOLDER/shared/aker-fake-hmdmc_public.crt -k $PROJECT_FOLDER/shared/aker-fake-hmdmc_private.pem $PORT > $PROJECT_FOLDER/current/log.txt 2>&1 &
 
 echo $! > ./run.pid
 echo "OK"
